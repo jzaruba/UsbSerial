@@ -1,4 +1,4 @@
-The forked library [fails to set baud rate](https://github.com/felHR85/UsbSerial/issues/91) once a connection is open and provides no way of setting the baud rate before opening a connection. For now this fork merely changes default baud rates for some devices.
+The forked library [fails to change baud rate once a connection is open](https://github.com/felHR85/UsbSerial/issues/91) and provides no way of setting the baud rate before opening a connection. For now this fork merely changes default baud rates for some devices.
 
 Devices Modified
 --------------------------------------
