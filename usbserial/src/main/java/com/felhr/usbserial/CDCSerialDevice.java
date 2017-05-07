@@ -21,7 +21,7 @@ public class CDCSerialDevice extends UsbSerialDevice
 
     /***
      *  Default Serial Configuration
-     *  Baud rate: 115200
+     *  Baud rate: 115200 or 230400
      *  Data bits: 8
      *  Stop bits: 1
      *  Parity: None
@@ -29,8 +29,10 @@ public class CDCSerialDevice extends UsbSerialDevice
      */
     private static final byte[] CDC_DEFAULT_LINE_CODING = new byte[] {
             (byte) 0x00, // Offset 0:4 dwDTERate
-            (byte) 0xC2,
-            (byte) 0x01,
+//            (byte) 0xC2, // 115200
+//            (byte) 0x01, // 115200
+            (byte) 0x84, // 230400
+            (byte) 0x03, // 230400
             (byte) 0x00,
             (byte) 0x00, // Offset 5 bCharFormat (1 Stop bit)
             (byte) 0x00, // bParityType (None)
