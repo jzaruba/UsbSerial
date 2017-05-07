@@ -18,6 +18,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CH34xSerialDevice extends UsbSerialDevice
 {
+    private static final int CH341_REQ_SERIAL_INIT = 0xA1;
+
     private static final String CLASS_ID = CH34xSerialDevice.class.getSimpleName();
 
     private static final int DEFAULT_BAUDRATE = 9600;
@@ -77,6 +79,7 @@ public class CH34xSerialDevice extends UsbSerialDevice
     private static final int CH34X_FLOW_CONTROL_NONE = 0x0000;
     private static final int CH34X_FLOW_CONTROL_RTS_CTS = 0x0101;
     private static final int CH34X_FLOW_CONTROL_DSR_DTR = 0x0202;
+    private static final int CH341_REQ_MODEM_OUT = 0xa4;
     // XON/XOFF doesnt appear to be supported directly from hardware
 
 
@@ -397,55 +400,53 @@ public class CH34xSerialDevice extends UsbSerialDevice
             Init the device at 9600 bauds
          */
 
-        if(setControlCommandOut(0xa1, 0xc29c, 0xb2b9, null) < 0)
+        if(setControlCommandOut(CH341_REQ_SERIAL_INIT, 0xc29c, 0xb2b9, null) < 0)
         {
             Log.i(CLASS_ID, "init failed! #1");
             return -1;
         }
 
-        if(setControlCommandOut(0xa4, 0xdf, 0, null) < 0)
+        if(setControlCommandOut(CH341_REQ_MODEM_OUT, 0xdf, 0, null) < 0)
         {
             Log.i(CLASS_ID, "init failed! #2");
             return -1;
         }
-
-        if(setControlCommandOut(0xa4, 0x9f, 0, null) < 0)
+        if(setControlCommandOut(CH341_REQ_MODEM_OUT, 0x9f, 0, null) < 0)
         {
             Log.i(CLASS_ID, "init failed! #3");
             return -1;
         }
 
-        if(checkState("init #4", 0x95, 0x0706, new int[]{0x9f, 0xee}) == -1)
+        if(checkState("init #4", CH341_REQ_READ_REG, 0x0706, new int[]{0x9f, 0xee}) == -1)
             return -1;
-
-        if(setControlCommandOut(0x9a, 0x2727, 0x0000, null) < 0)
+        if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x2727, 0, null) < 0)
         {
             Log.i(CLASS_ID, "init failed! #5");
             return -1;
         }
 
-        if(setControlCommandOut(0x9a, 0x1312, 0xb282, null) < 0)
+        // baud rate
+        if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x1312, CH34X_9600_1312, null) < 0)
         {
             Log.i(CLASS_ID, "init failed! #6");
             return -1;
         }
-
-        if(setControlCommandOut(0x9a, 0x0f2c, 0x0008, null) < 0)
+        if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x0f2c, CH34X_9600_0f2c, null) < 0)
         {
             Log.i(CLASS_ID, "init failed! #7");
             return -1;
         }
 
-        if(setControlCommandOut(0x9a, 0x2518, 0x00c3, null) < 0)
+        // parity 195
+        if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x2518, 0x00c3, null) < 0)
         {
             Log.i(CLASS_ID, "init failed! #8");
             return -1;
         }
 
-        if(checkState("init #9", 0x95, 0x0706, new int[]{0x9f, 0xee}) == -1)
+        if(checkState("init #9", CH341_REQ_READ_REG, 0x0706, new int[]{0x9f, 0xee}) == -1)
             return -1;
-
-        if(setControlCommandOut(0x9a, 0x2727, 0x0000, null) < 0)
+        if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x2727, 0, null) < 0)
         {
             Log.i(CLASS_ID, "init failed! #10");
             return -1;
@@ -460,7 +461,7 @@ public class CH34xSerialDevice extends UsbSerialDevice
             return -1;
         if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x0f2c, index0f2c, null) < 0)
             return -1;
-        if(checkState("set_baud_rate", 0x95, 0x0706, new int[]{0x9f, 0xee}) == -1)
+        if(checkState("set_baud_rate", CH341_REQ_READ_REG, 0x0706, new int[]{0x9f, 0xee}) == -1)
             return -1;
         if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x2727, 0, null) < 0)
             return -1;
@@ -471,7 +472,7 @@ public class CH34xSerialDevice extends UsbSerialDevice
     {
         if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x2518, indexParity, null) < 0)
             return -1;
-        if(checkState("set_parity", 0x95, 0x0706, new int[]{0x9f, 0xee}) == -1)
+        if(checkState("set_parity", CH341_REQ_READ_REG, 0x0706, new int[]{0x9f, 0xee}) == -1)
             return -1;
         if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x2727, 0, null) < 0)
             return -1;
@@ -480,7 +481,7 @@ public class CH34xSerialDevice extends UsbSerialDevice
 
     private int setCh340xFlow(int flowControl)
     {
-        if(checkState("set_flow_control", 0x95, 0x0706, new int[]{0x9f, 0xee}) == -1)
+        if(checkState("set_flow_control", CH341_REQ_READ_REG, 0x0706, new int[]{0x9f, 0xee}) == -1)
             return -1;
         if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x2727, flowControl, null) == -1)
             return -1;
@@ -544,7 +545,7 @@ public class CH34xSerialDevice extends UsbSerialDevice
 
     private int writeHandshakeByte()
     {
-        if(setControlCommandOut(0xa4, ~((dtr ? 1 << 5 : 0) | (rts ? 1 << 6 : 0)), 0, null) < 0)
+        if(setControlCommandOut(CH341_REQ_MODEM_OUT, ~((dtr ? 1 << 5 : 0) | (rts ? 1 << 6 : 0)), 0, null) < 0)
         {
             Log.i(CLASS_ID, "Failed to set handshake byte");
             return -1;
