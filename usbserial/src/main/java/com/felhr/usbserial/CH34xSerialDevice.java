@@ -22,8 +22,6 @@ public class CH34xSerialDevice extends UsbSerialDevice
 
     private static final String CLASS_ID = CH34xSerialDevice.class.getSimpleName();
 
-    private static final int DEFAULT_BAUDRATE = 9600;
-
     private static final int REQTYPE_HOST_FROM_DEVICE = UsbConstants.USB_TYPE_VENDOR | UsbConstants.USB_DIR_IN;
     private static final int REQTYPE_HOST_TO_DEVICE = 0x40;
 
@@ -397,7 +395,7 @@ public class CH34xSerialDevice extends UsbSerialDevice
     private int init()
     {
         /*
-            Init the device at 9600 bauds
+            Init the device at 115200 bauds
          */
 
         if(setControlCommandOut(CH341_REQ_SERIAL_INIT, 0xc29c, 0xb2b9, null) < 0)
@@ -426,12 +424,12 @@ public class CH34xSerialDevice extends UsbSerialDevice
         }
 
         // baud rate
-        if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x1312, CH34X_9600_1312, null) < 0)
+        if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x1312, CH34X_115200_1312, null) < 0)
         {
             Log.i(CLASS_ID, "init failed! #6");
             return -1;
         }
-        if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x0f2c, CH34X_9600_0f2c, null) < 0)
+        if(setControlCommandOut(CH341_REQ_WRITE_REG, 0x0f2c, CH34X_19200_0f2c_rest, null) < 0)
         {
             Log.i(CLASS_ID, "init failed! #7");
             return -1;
