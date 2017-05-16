@@ -110,6 +110,8 @@ public class FTDISerialDevice extends UsbSerialDevice
     @Override
     public boolean open()
     {
+        initSerialBuffer();
+
         boolean ret = openFTDI();
 
         if(ret)

@@ -52,6 +52,8 @@ public class CP2130SpiDevice extends UsbSpiDevice
     @Override
     public boolean connectSPI()
     {
+        initSerialBuffer();
+
         boolean ret = openCP2130();
 
         if(!ret)

@@ -56,6 +56,8 @@ public class BLED112SerialDevice extends UsbSerialDevice
     @Override
     public boolean open()
     {
+        initSerialBuffer();
+
         // Restart the working thread if it has been killed before and  get and claim interface
         restartWorkingThread();
         restartWriteThread();

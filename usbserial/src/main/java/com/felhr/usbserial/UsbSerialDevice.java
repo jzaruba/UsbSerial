@@ -24,6 +24,9 @@ public abstract class UsbSerialDevice implements UsbSerialInterface
 
     protected static final int USB_TIMEOUT = 5000;
 
+    private int readBufferSize = SerialBuffer.DEFAULT_READ_BUFFER_SIZE;
+    private int writeBufferSize = SerialBuffer.DEFAULT_WRITE_BUFFER_SIZE;
+
     protected SerialBuffer serialBuffer;
 
     protected WorkerThread workerThread;
@@ -50,7 +53,6 @@ public abstract class UsbSerialDevice implements UsbSerialInterface
         this.device = device;
         this.connection = connection;
         this.asyncMode = true;
-        serialBuffer = new SerialBuffer(mr1Version, SerialBuffer.DEFAULT_READ_BUFFER_SIZE, SerialBuffer.DEFAULT_WRITE_BUFFER_SIZE);
     }
 
     public static UsbSerialDevice createUsbSerialDevice(UsbDevice device, UsbDeviceConnection connection)
@@ -104,6 +106,18 @@ public abstract class UsbSerialDevice implements UsbSerialInterface
     // Common Usb Serial Operations (I/O Asynchronous)
     @Override
     public abstract boolean open();
+
+    protected void initSerialBuffer() {
+        serialBuffer = new SerialBuffer(mr1Version, readBufferSize, writeBufferSize);
+    }
+
+    public void setReadBufferSize(int readBufferSize) {
+        this.readBufferSize = readBufferSize;
+    }
+
+    public void setWriteBufferSize(int writeBufferSize) {
+        this.writeBufferSize = writeBufferSize;
+    }
 
     @Override
     public void write(byte[] buffer)

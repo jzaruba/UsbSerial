@@ -59,6 +59,8 @@ public class CDCSerialDevice extends UsbSerialDevice
     @Override
     public boolean open()
     {
+        initSerialBuffer();
+
         boolean ret = openCDC();
 
         if(ret)
