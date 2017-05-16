@@ -8,27 +8,36 @@ public class SerialBuffer
 {
     public static final int DEFAULT_READ_BUFFER_SIZE = 16 * 1024;
     public static final int DEFAULT_WRITE_BUFFER_SIZE = 16 * 1024;
+    private final int readBufferSize;
+    private final int writeBufferSize;
     private ByteBuffer readBuffer;
     private SynchronizedBuffer writeBuffer;
     private byte[] readBuffer_compatible; // Read buffer for android < 4.2
     private boolean debugging = false;
 
-    public SerialBuffer(boolean version)
+    public SerialBuffer(boolean version, int readBufferSize, int writeBufferSize)
     {
+        this.readBufferSize = readBufferSize;
+        this.writeBufferSize = writeBufferSize;
+
         writeBuffer = new SynchronizedBuffer();
         if(version)
         {
-            readBuffer = ByteBuffer.allocate(DEFAULT_READ_BUFFER_SIZE);
+            readBuffer = ByteBuffer.allocate(readBufferSize);
 
         }else
         {
-            readBuffer_compatible = new byte[DEFAULT_READ_BUFFER_SIZE];
+            readBuffer_compatible = new byte[readBufferSize];
         }
     }
 
+    public int getReadBufferSize() {
+        return readBufferSize;
+    }
+
     /*
-     * Print debug messages
-     */
+		 * Print debug messages
+		 */
     public void debug(boolean value)
     {
         debugging = value;
@@ -112,7 +121,7 @@ public class SerialBuffer
 
         public SynchronizedBuffer()
         {
-            this.buffer = new byte[DEFAULT_WRITE_BUFFER_SIZE];
+            this.buffer = new byte[writeBufferSize];
             position = -1;
         }
 
@@ -122,11 +131,11 @@ public class SerialBuffer
                 position = 0;
             if(debugging)
                 UsbSerialDebugger.printLogPut(src, true);
-            if(position + src.length > DEFAULT_WRITE_BUFFER_SIZE - 1) //Checking bounds. Source data does not fit in buffer
+            if(position + src.length > writeBufferSize - 1) //Checking bounds. Source data does not fit in buffer
             {
-                if(position < DEFAULT_WRITE_BUFFER_SIZE)
-                    System.arraycopy(src, 0, buffer, position, DEFAULT_WRITE_BUFFER_SIZE - position);
-                position = DEFAULT_WRITE_BUFFER_SIZE;
+                if(position < writeBufferSize)
+                    System.arraycopy(src, 0, buffer, position, writeBufferSize - position);
+                position = writeBufferSize;
                 notify();
             }else // Source data fits in buffer
             {

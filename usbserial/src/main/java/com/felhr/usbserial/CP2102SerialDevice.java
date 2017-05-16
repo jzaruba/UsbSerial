@@ -96,6 +96,8 @@ public class CP2102SerialDevice extends UsbSerialDevice
     @Override
     public boolean open()
     {
+        initSerialBuffer();
+
         boolean ret = openCP2102();
 
         if(ret)

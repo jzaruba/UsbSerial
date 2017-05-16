@@ -57,6 +57,8 @@ public class PL2303SerialDevice extends UsbSerialDevice
     @Override
     public boolean open()
     {
+        initSerialBuffer();
+
         boolean ret = openPL2303();
 
         if(ret)

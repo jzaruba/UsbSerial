@@ -69,6 +69,7 @@ public class XdcVcpSerialDevice extends UsbSerialDevice
     @Override
     public boolean open()
     {
+        initSerialBuffer();
 
         // Restart the working thread and writeThread if it has been killed before and  get and claim interface
         restartWorkingThread();

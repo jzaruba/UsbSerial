@@ -14,6 +14,9 @@ public abstract class UsbSpiDevice implements UsbSpiInterface
 
     protected static final int USB_TIMEOUT = 5000;
 
+    private int readBufferSize = SerialBuffer.DEFAULT_READ_BUFFER_SIZE;
+    private int writeBufferSize = SerialBuffer.DEFAULT_WRITE_BUFFER_SIZE;
+
     protected final UsbDevice device;
     protected final UsbDeviceConnection connection;
 
@@ -30,7 +33,6 @@ public abstract class UsbSpiDevice implements UsbSpiInterface
     {
         this.device = device;
         this.connection = connection;
-        this.serialBuffer = new SerialBuffer(false);
     }
 
     public static UsbSpiDevice createUsbSerialDevice(UsbDevice device, UsbDeviceConnection connection)
@@ -52,6 +54,18 @@ public abstract class UsbSpiDevice implements UsbSpiInterface
 
     @Override
     public abstract boolean connectSPI();
+
+    protected void initSerialBuffer() {
+        serialBuffer = new SerialBuffer(false, readBufferSize, writeBufferSize);
+    }
+
+    public void setReadBufferSize(int readBufferSize) {
+        this.readBufferSize = readBufferSize;
+    }
+
+    public void setWriteBufferSize(int writeBufferSize) {
+        this.writeBufferSize = writeBufferSize;
+    }
 
     @Override
     public abstract void writeMOSI(byte[] buffer);
@@ -140,7 +154,7 @@ public abstract class UsbSpiDevice implements UsbSpiInterface
                 int numberBytes;
                 if(inEndpoint != null)
                     numberBytes = connection.bulkTransfer(inEndpoint, serialBuffer.getBufferCompatible(),
-                            SerialBuffer.DEFAULT_READ_BUFFER_SIZE, 0);
+                            serialBuffer.getReadBufferSize(), 0);
                 else
                     numberBytes = 0;
 

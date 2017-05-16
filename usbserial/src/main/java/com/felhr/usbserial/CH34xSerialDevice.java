@@ -113,6 +113,8 @@ public class CH34xSerialDevice extends UsbSerialDevice
     @Override
     public boolean open()
     {
+        initSerialBuffer();
+
         boolean ret = openCH34X();
         if(ret)
         {
