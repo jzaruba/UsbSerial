@@ -50,7 +50,7 @@ public abstract class UsbSerialDevice implements UsbSerialInterface
         this.device = device;
         this.connection = connection;
         this.asyncMode = true;
-        serialBuffer = new SerialBuffer(mr1Version);
+        serialBuffer = new SerialBuffer(mr1Version, SerialBuffer.DEFAULT_READ_BUFFER_SIZE, SerialBuffer.DEFAULT_WRITE_BUFFER_SIZE);
     }
 
     public static UsbSerialDevice createUsbSerialDevice(UsbDevice device, UsbDeviceConnection connection)
@@ -121,7 +121,7 @@ public abstract class UsbSerialDevice implements UsbSerialInterface
         if(mr1Version)
         {
             workerThread.setCallback(mCallback);
-            workerThread.getUsbRequest().queue(serialBuffer.getReadBuffer(), SerialBuffer.DEFAULT_READ_BUFFER_SIZE);
+            workerThread.getUsbRequest().queue(serialBuffer.getReadBuffer(), serialBuffer.getReadBufferSize());
         }else
         {
             readThread.setCallback(mCallback);
@@ -254,7 +254,7 @@ public abstract class UsbSerialDevice implements UsbSerialInterface
                         onReceivedData(data);
                     }
                     // Queue a new request
-                    requestIN.queue(serialBuffer.getReadBuffer(), SerialBuffer.DEFAULT_READ_BUFFER_SIZE);
+                    requestIN.queue(serialBuffer.getReadBuffer(), serialBuffer.getReadBufferSize());
                 }
             }
         }
@@ -346,7 +346,7 @@ public abstract class UsbSerialDevice implements UsbSerialInterface
                 int numberBytes;
                 if(inEndpoint != null)
                     numberBytes = connection.bulkTransfer(inEndpoint, serialBuffer.getBufferCompatible(),
-                            SerialBuffer.DEFAULT_READ_BUFFER_SIZE, 0);
+                            serialBuffer.getReadBufferSize(), 0);
                 else
                     numberBytes = 0;
 

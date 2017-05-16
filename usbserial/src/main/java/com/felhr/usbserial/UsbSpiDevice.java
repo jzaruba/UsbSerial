@@ -30,7 +30,7 @@ public abstract class UsbSpiDevice implements UsbSpiInterface
     {
         this.device = device;
         this.connection = connection;
-        this.serialBuffer = new SerialBuffer(false);
+        this.serialBuffer = new SerialBuffer(false, SerialBuffer.DEFAULT_READ_BUFFER_SIZE, SerialBuffer.DEFAULT_WRITE_BUFFER_SIZE);
     }
 
     public static UsbSpiDevice createUsbSerialDevice(UsbDevice device, UsbDeviceConnection connection)
@@ -140,7 +140,7 @@ public abstract class UsbSpiDevice implements UsbSpiInterface
                 int numberBytes;
                 if(inEndpoint != null)
                     numberBytes = connection.bulkTransfer(inEndpoint, serialBuffer.getBufferCompatible(),
-                            SerialBuffer.DEFAULT_READ_BUFFER_SIZE, 0);
+                            serialBuffer.getReadBufferSize(), 0);
                 else
                     numberBytes = 0;
 
