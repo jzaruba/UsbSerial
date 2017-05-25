@@ -19,7 +19,7 @@ android {
         targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_TARGET_SDK_VERSION)
     }
 
-	task sourcesJar(type: Jar) {
+	task createSourcesJar(type: Jar) {
 		from android.sourceSets.main.java.srcDirs
 		destinationDir = file(System.getenv('DROPBOX') + '/Android/CAN_Bus/')
 		classifier = 'sources'
