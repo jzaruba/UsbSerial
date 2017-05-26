@@ -11,9 +11,9 @@ if "%JAVA8_HOME%" == "" (
 
 set JAVA_HOME=%JAVA8_HOME%
 
-call gradlew.bat createJar
+call gradlew createJar
 
-call gradlew.bat sourcesJar
+call gradlew createSourcesJar
 
 if %ERRORLEVEL% == 0 (
   copy usbserial\eclipse_lib\usbserial.jar ..\CAN_Bus\app\libs\
