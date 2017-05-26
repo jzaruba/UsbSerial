@@ -20,6 +20,7 @@ android {
     }
 
 	task createSourcesJar(type: Jar) {
+		println 'Creating sources JAR in ' + file(System.getenv('DROPBOX') + '/Android/CAN_Bus/')
 		from android.sourceSets.main.java.srcDirs
 		destinationDir = file(System.getenv('DROPBOX') + '/Android/CAN_Bus/')
 		classifier = 'sources'
@@ -42,6 +43,8 @@ android {
 		from android.sourceSets.main.java.srcDirs
 		classifier = 'sources'
 	}
+	
+	assemble.dependsOn 'createSourcesJar'
 
     createJar.dependsOn(deleteJar, build)
 }
