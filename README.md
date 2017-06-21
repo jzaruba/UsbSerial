@@ -1,4 +1,4 @@
-The original library [fails to change baud rate once a connection is open](https://github.com/felHR85/UsbSerial/issues/91) and provides no way of setting the baud rate before opening a connection. For now this fork merely changes default baud rates for some devices.
+The original library [fails to change baud rate once a connection is open](https://github.com/felHR85/UsbSerial/issues/91) and provides no way of setting the baud rate before opening a connection. **This fork merely changes default baud rates for some devices.**
 
 (To use your own baud rate see the [feature/initial_baud_rate](https://github.com/jzaruba/UsbSerial/tree/feature/initial_baud_rate) branch.)
 
